@@ -30,6 +30,16 @@ const createBook = async (req, res) => {
 };
 
 
+const getBorrowedBooks = async (req, res) => {
+  try {
+    const borrowedBooks = await Book.find({ statu: 0 }); 
+    res.status(200).json(borrowedBooks);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la récupération des livres empruntés', error });
+  }
+};
+
+
 const getAllBooks = async (req, res) => {
   try {
     const books = await Book.find();
@@ -74,5 +84,5 @@ module.exports = {
   getAllBooks,
   getBookById,
   updateBook,
-  deleteBook
+  deleteBook,getBorrowedBooks
 };
