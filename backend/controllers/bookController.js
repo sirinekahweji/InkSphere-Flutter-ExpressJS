@@ -1,14 +1,34 @@
 const Book = require('../models/bookModel');
 
+
+
+
+
 const createBook = async (req, res) => {
   try {
-    const book = new Book(req.body);
+    const { title, author, price, description, category, statu } = req.body;
+    let imageBase64 = null;
+    if (req.file) {
+      imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
+    }
+
+    const book = new Book({
+      title,
+      author,
+      price,
+      description,
+      category,
+      statu,
+      image: imageBase64, 
+    });
+
     const savedBook = await book.save();
     res.status(201).json(savedBook);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la création du livre', error });
   }
 };
+
 
 const getAllBooks = async (req, res) => {
   try {

@@ -6,11 +6,8 @@ const orderSchema = new mongoose.Schema(
     books: [
       {
         bookId: { type: mongoose.Schema.Types.ObjectId, ref: 'Book', required: true },
-        quantity: { type: Number, required: true },
       },
     ],
-    totalPrice: { type: Number, required: true },
-    status: { type: String, default: 'en cours' }, 
   },
   { timestamps: true } 
 );
