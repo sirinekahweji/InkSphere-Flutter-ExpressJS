@@ -49,6 +49,7 @@ class _SignInPageState extends State<SignInPage> {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       final token = responseData['token'];
+      final email = responseData['email'];
       Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
       final idUser = decodedToken['_id'];
       print('Connexion réussie, jeton: $token');
@@ -61,7 +62,7 @@ class _SignInPageState extends State<SignInPage> {
         context,
         MaterialPageRoute(
             builder: (context) =>
-                HomePage(idUser: idUser, role: responseData['role'])),
+                HomePage(idUser: idUser, role: responseData['role'],email:email)),
       );
     } else {
       final responseData = json.decode(response.body);

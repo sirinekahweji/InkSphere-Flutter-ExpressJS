@@ -7,7 +7,12 @@ import 'package:inksphere/detailsbook.dart';
 class HomePage extends StatefulWidget {
   final String idUser;
   final String role;
-  const HomePage({super.key, required this.idUser, required this.role});
+  final String email;
+  const HomePage(
+      {super.key,
+      required this.idUser,
+      required this.role,
+      required this.email});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -15,8 +20,6 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Book> books = [];
-
-  get idUser => null;
 
   Future<void> fetchBooks() async {
     final response =
@@ -47,9 +50,8 @@ class _HomePageState extends State<HomePage> {
           children: [
             Image.asset(
               'assets/logo.png',
-              width:
-                  70, 
-              height: 70, 
+              width: 70,
+              height: 70,
             ),
             Text(
               'InkSphere',
@@ -61,35 +63,49 @@ class _HomePageState extends State<HomePage> {
             ),
             Image.asset(
               'assets/logo.png',
-              width:
-                  70, 
-              height: 70, 
+              width: 70,
+              height: 70,
             ),
           ],
         ),
         backgroundColor: const Color(0xFFA65233),
       ),
       drawer: Drawer(
-        child: ListView(children: [
-          DrawerHeader(
-            child: Text(
-              'InkSphere',
-              style: GoogleFonts.lobster(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
+        child: ListView(
+          children: [
+            UserAccountsDrawerHeader(
+              accountName: Text(
+                'InkSphere', // You can replace this with the user's name if available
+                style: GoogleFonts.lobster(
+                  fontSize: 30,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
               ),
+
+              accountEmail: Text(widget.email),
+              currentAccountPicture: const CircleAvatar(
+                backgroundImage:
+                    AssetImage('assets/logo.png'), // Replace with user's avatar
+              ),
+
+              decoration: const BoxDecoration(
+                color: Color(0xFFA65233),
+              ),
+              margin: EdgeInsets.zero,
             ),
-          ),
-          const ListTile(
-            title: Text("My Books"),
-            leading: Icon(Icons.home),
-          ),
-          const ListTile(
-            title: Text("Logout"),
-            leading: Icon(Icons.info),
-          )
-        ]),
+            const ListTile(
+              title: Text("My Books"),
+              leading: Icon(Icons.favorite,color: Color(0xFFA65233)
+),
+            ),
+            const ListTile(
+              title: Text("Logout"),
+              leading: Icon(Icons.exit_to_app,color: Color(0xFFA65233),
+),
+            ),
+          ],
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -141,14 +157,15 @@ class _HomePageState extends State<HomePage> {
                         ),
                       ),
                       onTap: () {
-                       print("ID utilisateur avant détails : ${widget.idUser}");
-                       print("Livre sélectionné avant détails : ${book.title}");                        
+                        print(
+                            "ID utilisateur avant détails : ${widget.idUser}");
+                        print(
+                            "Livre sélectionné avant détails : ${book.title}");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                BookDetailsPage(book: book, idUser: widget.idUser),
-
+                            builder: (context) => BookDetailsPage(
+                                book: book, idUser: widget.idUser),
                           ),
                         );
                       },
