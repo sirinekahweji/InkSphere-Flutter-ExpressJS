@@ -8,6 +8,7 @@ const bookSchema = new mongoose.Schema(
     description: { type: String },
     category: { type: String },
     statu: { type: Number, default: 0 },
+    userId: { type: String, default: null },
     image: { type: String },
   },
   { timestamps: true } 

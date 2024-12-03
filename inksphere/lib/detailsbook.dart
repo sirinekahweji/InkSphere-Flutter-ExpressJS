@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
-
+import 'package:http/http.dart' as http;
 import 'package:inksphere/home.dart';
 
 class BookDetailsPage extends StatelessWidget {
   final Book book;
+  final String idUser;
 
-  const BookDetailsPage({super.key, required this.book});
+  const BookDetailsPage({super.key, required this.book, required this.idUser});
 
   @override
   Widget build(BuildContext context) {
@@ -40,7 +41,7 @@ class BookDetailsPage extends StatelessWidget {
                 book.image != null
                     ? Image.memory(
                         base64Decode(
-                          book.image!.replaceFirst('data:image/jpeg;base64,', ''),
+                          book.image!.replaceFirst('data:image/jpeg;base64,', ''), 
                         ),
                         width: 150,
                         height: 150,
@@ -66,10 +67,75 @@ class BookDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(
-                  onPressed: () {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text('Book borrowed successfully!')),
-                    );
+                  onPressed: () async {
+                    try {
+                      final response = await http.put(
+                        Uri.parse('http://localhost:5000/api/book/${book.id}'),  
+                        headers: {'Content-Type': 'application/json'},
+                        body: json.encode({
+                          'userId': idUser,  
+                          'statu': 1  
+                        }),
+                      );
+
+                      if (response.statusCode == 200) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Column(
+                              children: [
+                                Row(
+
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [                     
+                                    Text(
+                                      ' Book borrowed successfully',
+                                      style: TextStyle(
+                                        color: Color.fromARGB(255, 253, 254, 254),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                     SizedBox(width: 10),
+                                     Icon(
+                                      Icons.check_circle, 
+                                      color: Color.fromARGB(255, 251, 252, 251), 
+                                      size: 24,
+                                    ),
+                                  ],
+                                ),
+                              
+                              /*Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                                          
+                                    Text(
+                                      'Happy reading',
+                                      style: TextStyle(
+                                      color: Color.fromARGB(255, 253, 253, 253),
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                     SizedBox(width: 10),
+                                     Icon(
+                                      Icons.favorite, 
+                                      color: Color(0xFFA65233),
+                                       size: 24,
+                                    ),
+                                  ],
+                              )*/
+                              ],
+                            ),
+                           backgroundColor: Color.fromARGB(255, 68, 81, 56),
+                            duration: Duration(seconds: 4),
+                          ),
+                        );
+                      } else {
+                        throw Exception('Failed to borrow book');
+                      }
+                    } catch (e) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text('Error borrowing the book')),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color(0xFFA65233),
@@ -99,4 +165,3 @@ class BookDetailsPage extends StatelessWidget {
     );
   }
 }
-

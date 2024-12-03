@@ -6,7 +6,7 @@ const Book = require('../models/bookModel');
 
 const createBook = async (req, res) => {
   try {
-    const { title, author, price, description, category, statu } = req.body;
+    const { title, author, price, description, category, statu ,userId} = req.body;
     let imageBase64 = null;
     if (req.file) {
       imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
@@ -19,6 +19,7 @@ const createBook = async (req, res) => {
       description,
       category,
       statu,
+      userId,
       image: imageBase64, 
     });
 

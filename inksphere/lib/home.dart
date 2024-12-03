@@ -5,7 +5,9 @@ import 'package:http/http.dart' as http;
 import 'package:inksphere/detailsbook.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final String idUser;
+  final String role;
+  const HomePage({super.key, required this.idUser, required this.role});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -13,6 +15,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   List<Book> books = [];
+
+  get idUser => null;
+
   Future<void> fetchBooks() async {
     final response =
         await http.get(Uri.parse('http://localhost:5000/api/book/dispo'));
@@ -36,103 +41,138 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          backgroundColor: const Color(0xFFA65233),
-          leading: Image.asset(
-            'assets/logo.png',
-            height: 60,
-          ),
-          title: Text(
-            'InkSphere',
-            style: GoogleFonts.lobster(
-              fontSize: 30,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
+      appBar: AppBar(
+        title: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Image.asset(
+              'assets/logo.png',
+              width:
+                  70, 
+              height: 70, 
             ),
-          ),
-          actions: <Widget>[
-            IconButton(
-              icon: const Icon(Icons.menu, color: Colors.white),
-              onPressed: () {},
+            Text(
+              'InkSphere',
+              style: GoogleFonts.lobster(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Image.asset(
+              'assets/logo.png',
+              width:
+                  70, 
+              height: 70, 
             ),
           ],
         ),
-        body: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Text(
-                    '"I do believe something very magical can happen when you read a good book."',
-                    style: GoogleFonts.lobster(
-                      fontSize: 24,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.brown,
-                    ),
-                    textAlign: TextAlign.center,
-                  ),
-                  SizedBox(height: 10),
+        backgroundColor: const Color(0xFFA65233),
+      ),
+      drawer: Drawer(
+        child: ListView(children: [
+          DrawerHeader(
+            child: Text(
+              'InkSphere',
+              style: GoogleFonts.lobster(
+                fontSize: 30,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const ListTile(
+            title: Text("My Books"),
+            leading: Icon(Icons.home),
+          ),
+          const ListTile(
+            title: Text("Logout"),
+            leading: Icon(Icons.info),
+          )
+        ]),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Text(
+              '"I do believe something very magical can happen when you read a good book."',
+              style: GoogleFonts.lobster(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.brown,
+              ),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 10),
+            Expanded(
+              child: ListView.builder(
+                itemCount: books.length,
+                itemBuilder: (context, index) {
+                  final book = books[index];
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8.0),
+                    elevation: 5,
+                    child: ListTile(
+                      leading: book.image != null
+                          ? Image.memory(
+                              base64Decode(
+                                book.image!.replaceFirst(
+                                    'data:image/jpeg;base64,', ''),
+                              ),
+                              width: 70,
+                              height: 70,
+                              fit: BoxFit.contain,
+                            )
+                          : null,
+                      title: Text(
+                        book.title,
+                        style: GoogleFonts.lato(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      subtitle: Text(
+                        book.author,
+                        style: GoogleFonts.lato(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                      onTap: () {
+                       print("ID utilisateur avant détails : ${widget.idUser}");
+                       print("Livre sélectionné avant détails : ${book.title}");                        
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                BookDetailsPage(book: book, idUser: widget.idUser),
 
-                  // Liste des livres
-                  Expanded(
-                    child: ListView.builder(
-                      itemCount: books.length,
-                      itemBuilder: (context, index) {
-                        final book = books[index];
-                        return Card(
-                          margin: const EdgeInsets.symmetric(vertical: 8.0),
-                          elevation: 5,
-                          child: ListTile(
-                            leading: book.image != null
-                                ? Image.memory(
-                                    base64Decode(
-                                      book.image!.replaceFirst(
-                                          'data:image/jpeg;base64,', ''),
-                                    ),
-                                    width: 70,
-                                    height: 70,
-                                    fit: BoxFit.contain,
-                                  )
-                                : null,
-                            title: Text(
-                              book.title,
-                              style: GoogleFonts.lato(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w500,
-                              ),
-                            ),
-                            subtitle: Text(
-                              book.author,
-                              style: GoogleFonts.lato(
-                                fontSize: 16,
-                                fontWeight: FontWeight.w400,
-                              ),
-                            ),
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) =>
-                                      BookDetailsPage(book: book),
-                                ),
-                              );
-                            },
                           ),
                         );
                       },
                     ),
-                  ),
-                ])));
+                  );
+                },
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }
 
 class Book {
+  final String id;
   final String title;
   final String author;
   final String description;
   final String? image;
 
   Book({
+    required this.id,
     required this.title,
     required this.author,
     required this.description,
@@ -141,9 +181,10 @@ class Book {
 
   factory Book.fromJson(Map<String, dynamic> json) {
     return Book(
+      id: json['_id'],
       title: json['title'],
       author: json['author'],
-      description:json['description'],
+      description: json['description'],
       image: json['image'],
     );
   }

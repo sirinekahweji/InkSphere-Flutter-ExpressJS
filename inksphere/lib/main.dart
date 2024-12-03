@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/home.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   runApp(const MyApp());
@@ -14,7 +16,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home: HomePage(),
+      home: SignInPage(),
     );
   }
 }
@@ -47,10 +49,19 @@ class _SignInPageState extends State<SignInPage> {
     if (response.statusCode == 200) {
       final responseData = json.decode(response.body);
       final token = responseData['token'];
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      final idUser = decodedToken['_id'];
       print('Connexion réussie, jeton: $token');
+      print('user id: $idUser');
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      await prefs.setString('token', token);
+      await prefs.setString('idUser', idUser);
+      await prefs.setString('role', responseData['role']);
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomePage()),
+        MaterialPageRoute(
+            builder: (context) =>
+                HomePage(idUser: idUser, role: responseData['role'])),
       );
     } else {
       final responseData = json.decode(response.body);
