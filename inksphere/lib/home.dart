@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:inksphere/books.dart';
 import 'package:inksphere/detailsbook.dart';
 import 'package:inksphere/main.dart';
 import 'package:inksphere/mybooks.dart';
@@ -136,7 +137,7 @@ class _HomePageState extends State<HomePage> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => MyBooks(idUser: widget.idUser),
+                      builder: (context) => Books(idUser: widget.idUser),
                     ),
                   );
                 },

@@ -10,7 +10,7 @@ router.post('/', loginUser);
 
 //signup route
 router.post('/signup', signupUser);
-router.get('/',requireAuth, getUsers);
+router.get('/', getUsers);
 router.get('/:id', getUserById);
 router.delete('/delete/:id',requireAuth, deleteUser);
 router.post('/forgot-password', forgotPassword);
