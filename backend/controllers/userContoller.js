@@ -148,16 +148,39 @@ const deleteUser = async (req, res) => {
   const { id } = req.params;
 
   try {
-   
-    // Delete user
+    const user = await User.findById(id);
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
     await User.findByIdAndDelete(id);
-    console.log(" user deleted successfully")
-    res.status(200).json({ message: 'User  deleted successfully' });
+    console.log("User deleted successfully");
+    res.status(200).json({ message: 'User deleted successfully' });
   } catch (error) {
     console.error('Error deleting user:', error);
     res.status(500).json({ error: 'Server error' });
   }
 };
+
+
+const updateUser = async (req, res) => {
+  const { id } = req.params; 
+
+  try {
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+    const updatedUser= await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    console.error(' updating user done:');
+    res.status(200).json({ message: 'User updated successfully', updatedUser });
+  } catch (error) {
+    console.error('Error updating user:', error);
+    res.status(500).json({ error: 'Server error' });
+  }
+};
+
+
 
 
 const getUserById = async (req, res) => {
@@ -177,4 +200,4 @@ const getUserById = async (req, res) => {
 };
 
 
-module.exports = { signupUser,getUserById ,loginUser, forgotPassword ,changePassword,getUsers,deleteUser}
+module.exports = {updateUser ,signupUser,getUserById ,loginUser, forgotPassword ,changePassword,getUsers,deleteUser}

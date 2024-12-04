@@ -6,6 +6,7 @@ import 'package:inksphere/books.dart';
 import 'package:inksphere/detailsbook.dart';
 import 'package:inksphere/main.dart';
 import 'package:inksphere/mybooks.dart';
+import 'package:inksphere/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 
@@ -126,6 +127,13 @@ class _HomePageState extends State<HomePage> {
                 title: Text("Users"),
                 leading: Icon(Icons.person_2, color: Color(0xFFA65233)),
                 onTap: () {
+
+                  Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => Users(idUser: widget.idUser),
+                  ),
+                );
                 },
               ),
             ],
