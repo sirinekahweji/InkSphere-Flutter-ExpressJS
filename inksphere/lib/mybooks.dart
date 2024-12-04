@@ -3,28 +3,25 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/detailsbook.dart';
-import 'package:inksphere/mybooks.dart';
 
-class HomePage extends StatefulWidget {
-  final String idUser;
-  final String role;
-  final String email;
-  const HomePage(
+class MyBooks extends StatefulWidget {
+  final dynamic idUser;
+
+
+  const MyBooks(
       {super.key,
-      required this.idUser,
-      required this.role,
-      required this.email});
+      required this.idUser});
 
   @override
-  State<HomePage> createState() => _HomePageState();
+  State<MyBooks> createState() => _MyBooksPageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class _MyBooksPageState extends State<MyBooks> {
   List<Book> books = [];
 
   Future<void> fetchBooks() async {
     final response =
-        await http.get(Uri.parse('http://localhost:5000/api/book/dispo'));
+        await http.get(Uri.parse('http://localhost:5000/api/book/user/${widget.idUser}'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -45,74 +42,15 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Image.asset(
-              'assets/logo.png',
-              width: 70,
-              height: 70,
-            ),
-            Text(
-              'InkSphere',
-              style: GoogleFonts.lobster(
-                fontSize: 30,
-                fontWeight: FontWeight.bold,
-                color: Colors.white,
-              ),
-            ),
-            Image.asset(
-              'assets/logo.png',
-              width: 70,
-              height: 70,
-            ),
-          ],
-        ),
+     appBar: AppBar(
         backgroundColor: const Color(0xFFA65233),
-      ),
-      drawer: Drawer(
-        child: ListView(
-          children: [
-            UserAccountsDrawerHeader(
-              accountName: Text(
-                'InkSphere', // You can replace this with the user's name if available
-                style: GoogleFonts.lobster(
-                  fontSize: 30,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-
-              accountEmail: Text(widget.email),
-              currentAccountPicture: const CircleAvatar(
-                backgroundImage:
-                    AssetImage('assets/logo.png'), // Replace with user's avatar
-              ),
-
-              decoration: const BoxDecoration(
-                color: Color(0xFFA65233),
-              ),
-              margin: EdgeInsets.zero,
-            ),
-            ListTile(
-              title: Text("My Books"),
-              leading: Icon(Icons.favorite, color: Color(0xFFA65233)),
-              onTap: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => MyBooks(idUser: widget.idUser),
-                  ),
-                );
-              },
-            ),
-            const ListTile(
-              title: Text("Logout"),
-              leading: Icon(Icons.exit_to_app,color: Color(0xFFA65233),
-),
-            ),
-          ],
+        title: Text(
+          "My Books",
+          style: GoogleFonts.lobster(
+            fontSize: 30,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
         ),
       ),
       body: Padding(
@@ -121,7 +59,7 @@ class _HomePageState extends State<HomePage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             Text(
-              '"I do believe something very magical can happen when you read a good book."',
+              '"Once you learn to read, you will be forever free"',
               style: GoogleFonts.lobster(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -164,25 +102,12 @@ class _HomePageState extends State<HomePage> {
                           fontWeight: FontWeight.w400,
                         ),
                       ),
-                      onTap: () {
-                        print(
-                            "ID utilisateur avant détails : ${widget.idUser}");
-                        print(
-                            "Livre sélectionné avant détails : ${book.title}");
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => BookDetailsPage(
-                                book: book, idUser: widget.idUser),
-                          ),
-                        );
-                      },
                     ),
                   );
                 },
               ),
             ),
-          ],
+          ]        
         ),
       ),
     );

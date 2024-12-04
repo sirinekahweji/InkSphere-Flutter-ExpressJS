@@ -50,6 +50,20 @@ const getAllBooks = async (req, res) => {
   }
 };
 
+
+const getBooksByUserId = async (req, res) => {
+  try {
+    const userId = req.params.userId; 
+    const books = await Book.find({ userId }); 
+    if (books.length === 0) return res.status(404).json({ message: 'Aucun livre trouvé pour cet utilisateur' });
+    res.status(200).json(books);
+  } catch (error) {
+    res.status(500).json({ message: 'Erreur lors de la récupération des livres de l\'utilisateur', error });
+  }
+};
+
+
+
 const getBookById = async (req, res) => {
   try {
     const book = await Book.findById(req.params.id);
@@ -85,5 +99,5 @@ module.exports = {
   getAllBooks,
   getBookById,
   updateBook,
-  deleteBook,getBorrowedBooks
+  deleteBook,getBorrowedBooks,getBooksByUserId
 };
