@@ -3,7 +3,10 @@ import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/detailsbook.dart';
+import 'package:inksphere/main.dart';
 import 'package:inksphere/mybooks.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 class HomePage extends StatefulWidget {
   final String idUser;
@@ -42,6 +45,16 @@ class _HomePageState extends State<HomePage> {
     fetchBooks();
   }
 
+
+  Future<void> logout() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('token'); 
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => const MyApp()), 
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -76,7 +89,7 @@ class _HomePageState extends State<HomePage> {
           children: [
             UserAccountsDrawerHeader(
               accountName: Text(
-                'InkSphere', // You can replace this with the user's name if available
+                'InkSphere', 
                 style: GoogleFonts.lobster(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
@@ -87,7 +100,7 @@ class _HomePageState extends State<HomePage> {
               accountEmail: Text(widget.email),
               currentAccountPicture: const CircleAvatar(
                 backgroundImage:
-                    AssetImage('assets/logo.png'), // Replace with user's avatar
+                    AssetImage('assets/logo.png'), 
               ),
 
               decoration: const BoxDecoration(
@@ -107,10 +120,35 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-            const ListTile(
+             if (widget.role == 'admin') ...[
+              ListTile(
+                title: Text("Users"),
+                leading: Icon(Icons.person_2, color: Color(0xFFA65233)),
+                onTap: () {
+                },
+              ),
+            ],
+            if (widget.role == 'admin') ...[
+              ListTile(
+                title: Text("Books"),
+                leading: Icon(Icons.menu_book, color: Color(0xFFA65233)),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => MyBooks(idUser: widget.idUser),
+                    ),
+                  );
+                },
+              ),
+            ],
+            
+             ListTile(
               title: Text("Logout"),
-              leading: Icon(Icons.exit_to_app,color: Color(0xFFA65233),
-),
+              leading: Icon(Icons.exit_to_app, color: Color(0xFFA65233)),
+              onTap: () {
+                logout(); 
+              },
             ),
           ],
         ),
