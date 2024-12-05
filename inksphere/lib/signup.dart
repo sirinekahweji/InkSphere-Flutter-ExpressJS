@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/home.dart';
+import 'package:inksphere/main.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -47,8 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => HomePage(
-                idUser: idUser, role: responseData['role'], email: email)),
+            builder: (context) => MyApp()),
       );
     } else {
       final responseData = json.decode(response.body);
