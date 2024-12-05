@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:inksphere/Book.dart';
 import 'package:inksphere/books.dart';
 import 'package:inksphere/detailsbook.dart';
 import 'package:inksphere/main.dart';
@@ -9,16 +10,12 @@ import 'package:inksphere/mybooks.dart';
 import 'package:inksphere/users.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-
 class HomePage extends StatefulWidget {
   final String idUser;
   final String role;
   final String email;
   const HomePage(
-      {super.key,
-      required this.idUser,
-      required this.role,
-      required this.email});
+      {super.key, required this.idUser, required this.role, required this.email});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -47,13 +44,12 @@ class _HomePageState extends State<HomePage> {
     fetchBooks();
   }
 
-
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
-    await prefs.remove('token'); 
+    await prefs.remove('token');
     Navigator.pushReplacement(
       context,
-      MaterialPageRoute(builder: (context) => const MyApp()), 
+      MaterialPageRoute(builder: (context) => const MyApp()),
     );
   }
 
@@ -91,28 +87,25 @@ class _HomePageState extends State<HomePage> {
           children: [
             UserAccountsDrawerHeader(
               accountName: Text(
-                'InkSphere', 
+                'InkSphere',
                 style: GoogleFonts.lobster(
                   fontSize: 30,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
               ),
-
               accountEmail: Text(widget.email),
               currentAccountPicture: const CircleAvatar(
-                backgroundImage:
-                    AssetImage('assets/logo.png'), 
+                backgroundImage: AssetImage('assets/logo.png'),
               ),
-
               decoration: const BoxDecoration(
                 color: Color(0xFFA65233),
               ),
               margin: EdgeInsets.zero,
             ),
             ListTile(
-              title: Text("My Books"),
-              leading: Icon(Icons.favorite, color: Color(0xFFA65233)),
+              title: const Text("My Books"),
+              leading: const Icon(Icons.favorite, color: Color(0xFFA65233)),
               onTap: () {
                 Navigator.push(
                   context,
@@ -122,25 +115,22 @@ class _HomePageState extends State<HomePage> {
                 );
               },
             ),
-             if (widget.role == 'admin') ...[
-              ListTile(
-                title: Text("Users"),
-                leading: Icon(Icons.person_2, color: Color(0xFFA65233)),
-                onTap: () {
-
-                  Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => Users(idUser: widget.idUser),
-                  ),
-                );
-                },
-              ),
-            ],
             if (widget.role == 'admin') ...[
               ListTile(
-                title: Text("Books"),
-                leading: Icon(Icons.menu_book, color: Color(0xFFA65233)),
+                title: const Text("Users"),
+                leading: const Icon(Icons.person_2, color: Color(0xFFA65233)),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => Users(idUser: widget.idUser),
+                    ),
+                  );
+                },
+              ),
+              ListTile(
+                title: const Text("Books"),
+                leading: const Icon(Icons.menu_book, color: Color(0xFFA65233)),
                 onTap: () {
                   Navigator.push(
                     context,
@@ -151,13 +141,10 @@ class _HomePageState extends State<HomePage> {
                 },
               ),
             ],
-            
-             ListTile(
-              title: Text("Logout"),
-              leading: Icon(Icons.exit_to_app, color: Color(0xFFA65233)),
-              onTap: () {
-                logout(); 
-              },
+            ListTile(
+              title: const Text("Logout"),
+              leading: const Icon(Icons.exit_to_app, color: Color(0xFFA65233)),
+              onTap: logout,
             ),
           ],
         ),
@@ -178,12 +165,17 @@ class _HomePageState extends State<HomePage> {
             ),
             const SizedBox(height: 10),
             Expanded(
-              child: ListView.builder(
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                  childAspectRatio: 2.5,
+                ),
                 itemCount: books.length,
                 itemBuilder: (context, index) {
                   final book = books[index];
                   return Card(
-                    margin: const EdgeInsets.symmetric(vertical: 8.0),
                     elevation: 5,
                     child: ListTile(
                       leading: book.image != null
@@ -192,35 +184,33 @@ class _HomePageState extends State<HomePage> {
                                 book.image!.replaceFirst(
                                     'data:image/jpeg;base64,', ''),
                               ),
-                              width: 70,
-                              height: 70,
+                              width: 50,
+                              height: 50,
                               fit: BoxFit.contain,
                             )
                           : null,
                       title: Text(
                         book.title,
                         style: GoogleFonts.lato(
-                          fontSize: 18,
+                          fontSize: 16,
                           fontWeight: FontWeight.w500,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       subtitle: Text(
                         book.author,
                         style: GoogleFonts.lato(
-                          fontSize: 16,
+                          fontSize: 14,
                           fontWeight: FontWeight.w400,
                         ),
+                        overflow: TextOverflow.ellipsis,
                       ),
                       onTap: () {
-                        print(
-                            "ID utilisateur avant détails : ${widget.idUser}");
-                        print(
-                            "Livre sélectionné avant détails : ${book.title}");
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => BookDetailsPage(
-                                book: book, idUser: widget.idUser),
+                            builder: (context) =>
+                                BookDetailsPage(book: book, idUser: widget.idUser),
                           ),
                         );
                       },
@@ -236,28 +226,4 @@ class _HomePageState extends State<HomePage> {
   }
 }
 
-class Book {
-  final String id;
-  final String title;
-  final String author;
-  final String description;
-  final String? image;
 
-  Book({
-    required this.id,
-    required this.title,
-    required this.author,
-    required this.description,
-    this.image,
-  });
-
-  factory Book.fromJson(Map<String, dynamic> json) {
-    return Book(
-      id: json['_id'],
-      title: json['title'],
-      author: json['author'],
-      description: json['description'],
-      image: json['image'],
-    );
-  }
-}

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:inksphere/Book.dart';
+import 'package:inksphere/details.dart';
 
 class Books extends StatefulWidget {
   final dynamic idUser;
@@ -26,7 +28,8 @@ class _BooksPageState extends State<Books> {
   final FocusNode _searchFocusNode = FocusNode();
 
   Future<void> fetchBooks() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/book'));
+    final response =
+        await http.get(Uri.parse('http://localhost:5000/api/book'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -42,8 +45,13 @@ class _BooksPageState extends State<Books> {
   void filterBooks() {
     setState(() {
       filteredBooks = books
-          .where((book) => book.title.toLowerCase().contains(searchController.text.toLowerCase()) ||
-                          book.author.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((book) =>
+              book.title
+                  .toLowerCase()
+                  .contains(searchController.text.toLowerCase()) ||
+              book.author
+                  .toLowerCase()
+                  .contains(searchController.text.toLowerCase()))
           .toList();
     });
   }
@@ -65,8 +73,8 @@ class _BooksPageState extends State<Books> {
     );
 
     if (response.statusCode == 200) {
-      fetchBooks(); // Refresh the list
-      Navigator.pop(context); // Close the form after adding
+      fetchBooks();
+      Navigator.pop(context);
     } else {
       throw Exception('Failed to add book');
     }
@@ -89,8 +97,8 @@ class _BooksPageState extends State<Books> {
     );
 
     if (response.statusCode == 200) {
-      fetchBooks(); // Refresh the list
-      Navigator.pop(context); // Close the form after updating
+      fetchBooks();
+      Navigator.pop(context);
     } else {
       throw Exception('Failed to update book');
     }
@@ -101,21 +109,21 @@ class _BooksPageState extends State<Books> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this book?'),
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this book?'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                deleteBook(bookId); // Delete the book
+                Navigator.of(context).pop();
+                deleteBook(bookId);
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -130,7 +138,7 @@ class _BooksPageState extends State<Books> {
     if (response.statusCode == 200) {
       setState(() {
         books.removeWhere((book) => book.id == bookId);
-        filteredBooks = books; // Update filtered list after deletion
+        filteredBooks = books;
       });
     } else {
       throw Exception('Failed to delete book');
@@ -173,8 +181,8 @@ class _BooksPageState extends State<Books> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Search TextField
-                Container(
-                  width: 300, 
+                SizedBox(
+                  width: 300,
                   height: 40,
                   child: TextField(
                     controller: searchController,
@@ -182,28 +190,31 @@ class _BooksPageState extends State<Books> {
                     decoration: InputDecoration(
                       hintText: 'Search books...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30), // Rounded corners
+                        borderRadius:
+                            BorderRadius.circular(30), // Rounded corners
                         borderSide: BorderSide(
-                          color: _searchFocusNode.hasFocus ? Color(0xFF6F4F37) : Color(0xFFA65233), // Brown color when focused
+                          color: _searchFocusNode.hasFocus
+                              ? const Color(0xFF6F4F37)
+                              : const Color(0xFFA65233),
                           width: 1,
-                        ), 
+                        ),
                       ),
                       suffixIcon: const Icon(
                         Icons.search,
-                        color: Color(0xFFA65233), // Brown icon color
+                        color: Color(0xFFA65233),
                       ),
                     ),
                   ),
                 ),
-                // Add Book Button
                 ElevatedButton(
                   onPressed: () {
-                    // Show form for adding a new book
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('Add New Book',),
+                          title: const Text(
+                            'Add New Book',
+                          ),
                           content: BookForm(
                             titleController: titleController,
                             authorController: authorController,
@@ -217,17 +228,17 @@ class _BooksPageState extends State<Books> {
                       },
                     );
                   },
-                  child: Row(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFA65233),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('Add Book'),
-                      SizedBox(width: 8), // Add some spacing between the text and icon
-                      Icon(Icons.add), // Add the add icon
+                      SizedBox(width: 8),
+                      Icon(Icons.add),
                     ],
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFA65233), 
-                    foregroundColor: Colors.white, 
                   ),
                 ),
               ],
@@ -242,10 +253,19 @@ class _BooksPageState extends State<Books> {
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   elevation: 5,
                   child: ListTile(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => DetailsPage(bookdetails: book),
+                        ),
+                      );
+                    },
                     leading: book.image != null
                         ? Image.memory(
                             base64Decode(
-                              book.image!.replaceFirst('data:image/jpeg;base64,', ''),
+                              book.image!
+                                  .replaceFirst('data:image/jpeg;base64,', ''),
                             ),
                             width: 70,
                             height: 70,
@@ -270,7 +290,8 @@ class _BooksPageState extends State<Books> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit, color: Color.fromARGB(255, 13, 126, 32)),
+                          icon: const Icon(Icons.edit,
+                              color: Color.fromARGB(255, 13, 126, 32)),
                           onPressed: () {
                             titleController.text = book.title;
                             authorController.text = book.author;
@@ -282,11 +303,12 @@ class _BooksPageState extends State<Books> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Edit Book'),
+                                  title: const Text('Edit Book'),
                                   content: BookForm(
                                     titleController: titleController,
                                     authorController: authorController,
-                                    descriptionController: descriptionController,
+                                    descriptionController:
+                                        descriptionController,
                                     imageController: imageController,
                                     priceController: priceController,
                                     categoryController: categoryController,
@@ -298,9 +320,10 @@ class _BooksPageState extends State<Books> {
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete, color: Color.fromARGB(255, 245, 2, 2)),
+                          icon: const Icon(Icons.delete,
+                              color: Color.fromARGB(255, 245, 2, 2)),
                           onPressed: () {
-                            showDeleteConfirmationDialog(book.id); // Show delete confirmation
+                            showDeleteConfirmationDialog(book.id);
                           },
                         ),
                       ],
@@ -315,8 +338,6 @@ class _BooksPageState extends State<Books> {
     );
   }
 }
-
-
 
 class BookForm extends StatelessWidget {
   final TextEditingController titleController;
@@ -345,69 +366,38 @@ class BookForm extends StatelessWidget {
       children: [
         TextField(
           controller: titleController,
-          decoration: InputDecoration(labelText: 'Title'),
+          decoration: const InputDecoration(labelText: 'Title'),
         ),
         TextField(
           controller: authorController,
-          decoration: InputDecoration(labelText: 'Author'),
+          decoration: const InputDecoration(labelText: 'Author'),
         ),
         TextField(
           controller: descriptionController,
-          decoration: InputDecoration(labelText: 'Description'),
+          decoration: const InputDecoration(labelText: 'Description'),
         ),
         TextField(
           controller: imageController,
-          decoration: InputDecoration(labelText: 'Image URL'),
+          decoration: const InputDecoration(labelText: 'Image URL'),
         ),
         TextField(
           controller: priceController,
-          decoration: InputDecoration(labelText: 'Price'),
+          decoration: const InputDecoration(labelText: 'Price'),
         ),
         TextField(
           controller: categoryController,
-          decoration: InputDecoration(labelText: 'Category'),
+          decoration: const InputDecoration(labelText: 'Category'),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: onSubmit,
-          child: Text('Submit'),
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white, backgroundColor: Color(0xFFA65233), 
+            foregroundColor: Colors.white,
+            backgroundColor: const Color(0xFFA65233),
           ),
+          child: const Text('Submit'),
         ),
       ],
-    );
-  }
-}
-
-class Book {
-  final String id;
-  final String title;
-  final String author;
-  final String description;
-  final String? image;
-  final String? price;
-  final String? category;
-
-  Book({
-    required this.id,
-    required this.title,
-    required this.author,
-    required this.description,
-    this.image,
-    this.price,
-    this.category,
-  });
-
-  factory Book.fromJson(Map<String, dynamic> json) {
-    return Book(
-      id: json['_id'],
-      title: json['title'],
-      author: json['author'],
-      description: json['description'],
-      image: json['image'],
-    price: json['price']?.toString(),
-      category: json['category'],
     );
   }
 }

@@ -61,8 +61,8 @@ class _SignInPageState extends State<SignInPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) =>
-                HomePage(idUser: idUser, role: responseData['role'],email:email)),
+            builder: (context) => HomePage(
+                idUser: idUser, role: responseData['role'], email: email)),
       );
     } else {
       final responseData = json.decode(response.body);
@@ -82,10 +82,10 @@ class _SignInPageState extends State<SignInPage> {
         child: Center(
           child: Column(
             children: <Widget>[
-              Image.asset('assets/logo.png', width: 200, height: 200),
-              const SizedBox(height: 20),
+              Image.asset('assets/logo.png', width: 150, height: 150),
+              const SizedBox(height: 10),
               const Text(
-                'INKSPHERE',
+                'INKSPHERE\nWelcome!',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,

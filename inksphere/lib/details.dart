@@ -5,11 +5,10 @@ import 'package:http/http.dart' as http;
 import 'package:inksphere/Book.dart';
 import 'package:inksphere/home.dart';
 
-class BookDetailsPage extends StatelessWidget {
-  final Book book;
-  final String idUser;
+class DetailsPage extends StatelessWidget {
+  final Book bookdetails;
 
-  const BookDetailsPage({super.key, required this.book, required this.idUser});
+  const DetailsPage({super.key, required this.bookdetails});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +16,7 @@ class BookDetailsPage extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: const Color(0xFFA65233),
         title: Text(
-          book.title,
+          bookdetails.title,
           style: GoogleFonts.lobster(
             fontSize: 30,
             fontWeight: FontWeight.bold,
@@ -39,10 +38,10 @@ class BookDetailsPage extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: <Widget>[
-                book.image != null
+                bookdetails.image != null
                     ? Image.memory(
                         base64Decode(
-                          book.image!
+                          bookdetails.image!
                               .replaceFirst('data:image/jpeg;base64,', ''),
                         ),
                         width: 150,
@@ -51,7 +50,7 @@ class BookDetailsPage extends StatelessWidget {
                     : const SizedBox.shrink(),
                 const SizedBox(height: 20),
                 Text(
-                  book.title,
+                  bookdetails.title,
                   style: GoogleFonts.lato(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
@@ -60,7 +59,7 @@ class BookDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 10),
                 Text(
-                  'Author: ${book.author}',
+                  'Author: ${bookdetails.author}',
                   style: GoogleFonts.lato(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -72,9 +71,10 @@ class BookDetailsPage extends StatelessWidget {
                   onPressed: () async {
                     try {
                       final response = await http.put(
-                        Uri.parse('http://localhost:5000/api/book/${book.id}'),
+                        Uri.parse(
+                            'http://localhost:5000/api/book/${bookdetails.id}'),
                         headers: {'Content-Type': 'application/json'},
-                        body: json.encode({'userId': idUser, 'statu': 1}),
+                        body: json.encode({'statu': 0}),
                       );
 
                       if (response.statusCode == 200) {
@@ -118,10 +118,10 @@ class BookDetailsPage extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color(0xFFA65233),
+                    backgroundColor: const Color.fromARGB(255, 4, 88, 73),
                   ),
                   child: const Text(
-                    'Borrow Book',
+                    'Available Book 😊',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
@@ -130,7 +130,7 @@ class BookDetailsPage extends StatelessWidget {
                 ),
                 const SizedBox(height: 20),
                 Text(
-                  book.description,
+                  bookdetails.description,
                   style: GoogleFonts.lato(
                     fontSize: 16,
                     fontWeight: FontWeight.bold,

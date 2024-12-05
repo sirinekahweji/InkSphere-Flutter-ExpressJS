@@ -22,9 +22,9 @@ class _UsersPageState extends State<Users> {
 
   final FocusNode _searchFocusNode = FocusNode();
 
-  // Fetch users from the backend
   Future<void> fetchUsers() async {
-    final response = await http.get(Uri.parse('http://localhost:5000/api/user'));
+    final response =
+        await http.get(Uri.parse('http://localhost:5000/api/user'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -37,22 +37,25 @@ class _UsersPageState extends State<Users> {
     }
   }
 
-  // Filter users based on the search text
   void filterUsers() {
     setState(() {
       filteredUsers = users
-          .where((user) => user.name.toLowerCase().contains(searchController.text.toLowerCase()) ||
-                          user.email.toLowerCase().contains(searchController.text.toLowerCase()))
+          .where((user) =>
+              user.name
+                  .toLowerCase()
+                  .contains(searchController.text.toLowerCase()) ||
+              user.email
+                  .toLowerCase()
+                  .contains(searchController.text.toLowerCase()))
           .toList();
     });
   }
 
-  // Add a new user
   Future<void> addUser() async {
     final newUser = {
       'name': nameController.text,
       'email': emailController.text,
-      'password': passwordController.text, // Add password here
+      'password': passwordController.text,
     };
 
     final response = await http.post(
@@ -62,19 +65,19 @@ class _UsersPageState extends State<Users> {
     );
 
     if (response.statusCode == 200) {
-      fetchUsers(); // Refresh the list
-      Navigator.pop(context); // Close the form after adding
+      fetchUsers();
+      clearForm();
     } else {
       throw Exception('Failed to add user');
     }
+    Navigator.pop(context);
   }
 
-  // Update user information
   Future<void> updateUser(String userId) async {
     final updatedUser = {
       'name': nameController.text,
       'email': emailController.text,
-      'password': passwordController.text, // Add password here
+      'password': passwordController.text,
     };
 
     final response = await http.put(
@@ -84,34 +87,34 @@ class _UsersPageState extends State<Users> {
     );
 
     if (response.statusCode == 200) {
-      fetchUsers(); // Refresh the list
-      Navigator.pop(context); // Close the form after updating
+      fetchUsers();
+      clearForm();
     } else {
       throw Exception('Failed to update user');
     }
+    Navigator.pop(context);
   }
 
-  // Show confirmation dialog for deleting a user
   Future<void> showDeleteConfirmationDialog(String userId) async {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Confirm Deletion'),
-          content: Text('Are you sure you want to delete this user?'),
+          title: const Text('Confirm Deletion'),
+          content: const Text('Are you sure you want to delete this user?'),
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
+                Navigator.of(context).pop();
               },
-              child: Text('Cancel'),
+              child: const Text('Cancel'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.of(context).pop(); // Close the dialog
-                deleteUser(userId); // Delete the user
+                Navigator.of(context).pop();
+                deleteUser(userId);
               },
-              child: Text('Delete'),
+              child: const Text('Delete'),
             ),
           ],
         );
@@ -119,7 +122,12 @@ class _UsersPageState extends State<Users> {
     );
   }
 
-  // Delete user
+  void clearForm() {
+    nameController.clear();
+    emailController.clear();
+    passwordController.clear();
+  }
+
   Future<void> deleteUser(String userId) async {
     final response = await http.delete(
       Uri.parse('http://localhost:5000/api/user/delete/$userId'),
@@ -127,7 +135,7 @@ class _UsersPageState extends State<Users> {
     if (response.statusCode == 200) {
       setState(() {
         users.removeWhere((user) => user.id == userId);
-        filteredUsers = users; 
+        filteredUsers = users;
       });
     } else {
       throw Exception('Failed to delete user');
@@ -170,7 +178,7 @@ class _UsersPageState extends State<Users> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 // Search TextField
-                Container(
+                SizedBox(
                   width: 300,
                   height: 40,
                   child: TextField(
@@ -179,28 +187,27 @@ class _UsersPageState extends State<Users> {
                     decoration: InputDecoration(
                       hintText: 'Search users...',
                       border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30), // Rounded corners
-                        borderSide: BorderSide(
-                          color: _searchFocusNode.hasFocus ? Color(0xFF6F4F37) : Color(0xFFA65233), // Brown color when focused
+                        borderRadius: BorderRadius.circular(30),
+                        borderSide: const BorderSide(
+                          color: Color(0xFF6F4F37),
                           width: 1,
                         ),
                       ),
                       suffixIcon: const Icon(
                         Icons.search,
-                        color: Color(0xFFA65233), // Brown icon color
+                        color: Color(0xFFA65233),
                       ),
                     ),
                   ),
                 ),
-                // Add User Button
+
                 ElevatedButton(
                   onPressed: () {
-                    // Show form for adding a new user
                     showDialog(
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text('Add New User'),
+                          title: const Text('Add New User'),
                           content: UserForm(
                             nameController: nameController,
                             emailController: emailController,
@@ -211,17 +218,17 @@ class _UsersPageState extends State<Users> {
                       },
                     );
                   },
-                  child: Row(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFFA65233),
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
                       Text('Add User'),
                       SizedBox(width: 8),
                       Icon(Icons.add),
                     ],
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFFA65233),
-                    foregroundColor: Colors.white,
                   ),
                 ),
               ],
@@ -235,9 +242,8 @@ class _UsersPageState extends State<Users> {
                 return Card(
                   margin: const EdgeInsets.symmetric(vertical: 8.0),
                   elevation: 5,
-
                   child: ListTile(
-                    leading: Icon(Icons.account_circle), // Icon before the name
+                    leading: const Icon(Icons.account_circle),
                     title: Text(
                       user.name,
                       style: GoogleFonts.lato(
@@ -256,7 +262,8 @@ class _UsersPageState extends State<Users> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         IconButton(
-                          icon: Icon(Icons.edit, color: Color.fromARGB(255, 13, 126, 32)),
+                          icon: const Icon(Icons.edit,
+                              color: Color.fromARGB(255, 13, 126, 32)),
                           onPressed: () {
                             nameController.text = user.name;
                             emailController.text = user.email;
@@ -265,7 +272,7 @@ class _UsersPageState extends State<Users> {
                               context: context,
                               builder: (context) {
                                 return AlertDialog(
-                                  title: Text('Edit User'),
+                                  title: const Text('Edit User'),
                                   content: UserForm(
                                     nameController: nameController,
                                     emailController: emailController,
@@ -278,9 +285,10 @@ class _UsersPageState extends State<Users> {
                           },
                         ),
                         IconButton(
-                          icon: Icon(Icons.delete, color: Color.fromARGB(255, 245, 2, 2)),
+                          icon: const Icon(Icons.delete,
+                              color: Color.fromARGB(255, 245, 2, 2)),
                           onPressed: () {
-                            showDeleteConfirmationDialog(user.id); // Show delete confirmation
+                            showDeleteConfirmationDialog(user.id);
                           },
                         ),
                       ],
@@ -317,21 +325,21 @@ class UserForm extends StatelessWidget {
       children: [
         TextField(
           controller: nameController,
-          decoration: InputDecoration(labelText: 'Name'),
+          decoration: const InputDecoration(labelText: 'Name'),
         ),
         TextField(
           controller: emailController,
-          decoration: InputDecoration(labelText: 'Email'),
+          decoration: const InputDecoration(labelText: 'Email'),
         ),
         TextField(
           controller: passwordController,
           obscureText: true,
-          decoration: InputDecoration(labelText: 'Password'),
+          decoration: const InputDecoration(labelText: 'Password'),
         ),
-        SizedBox(height: 16),
+        const SizedBox(height: 16),
         ElevatedButton(
           onPressed: onSubmit,
-          child: Text('Submit'),
+          child: const Text('Submit'),
         ),
       ],
     );
@@ -345,14 +353,18 @@ class User {
   final String email;
   final String password;
 
-  User({required this.id, required this.name, required this.email, required this.password});
+  User(
+      {required this.id,
+      required this.name,
+      required this.email,
+      required this.password});
 
   factory User.fromJson(Map<String, dynamic> json) {
     return User(
       id: json['_id'],
       name: json['name'],
       email: json['email'],
-      password: json['password'], // Include password in the User model
+      password: json['password'],
     );
   }
 }
