@@ -1,40 +1,24 @@
-import 'package:flutter/material.dart';
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/home.dart';
-import 'package:inksphere/signup.dart';
 import 'package:jwt_decoder/jwt_decoder.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-void main() {
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+class SignUpPage extends StatefulWidget {
+  const SignUpPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SignInPage(),
-    );
-  }
+  _SignUpPageState createState() => _SignUpPageState();
 }
 
-class SignInPage extends StatefulWidget {
-  const SignInPage({super.key});
-
-  @override
-  _SignInPageState createState() => _SignInPageState();
-}
-
-class _SignInPageState extends State<SignInPage> {
+class _SignUpPageState extends State<SignUpPage> {
+  final TextEditingController _nameController = TextEditingController();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
 
-  Future<void> signIn(String email, String password) async {
-    final url = Uri.parse('http://localhost:5000/api/user');
+  Future<void> signUp() async {
+    final url = Uri.parse('http://localhost:5000/api/user/signup');
 
     final response = await http.post(
       url,
@@ -42,8 +26,9 @@ class _SignInPageState extends State<SignInPage> {
         'Content-Type': 'application/json',
       },
       body: json.encode({
-        'email': email,
-        'password': password,
+        'name': _nameController.text,
+        'email': _emailController.text,
+        'password': _passwordController.text,
       }),
     );
 
@@ -67,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
       );
     } else {
       final responseData = json.decode(response.body);
-      print('Erreur: ${responseData['message']}');
+      print('Error: ${responseData['message']}');
     }
   }
 
@@ -79,18 +64,17 @@ class _SignInPageState extends State<SignInPage> {
         backgroundColor: const Color(0xFFA65233),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(20.0),
+        padding: const EdgeInsets.all(10.0),
         child: Center(
           child: Column(
             children: <Widget>[
               Image.asset('assets/logo.png', width: 150, height: 150),
-              const SizedBox(height: 10),
+              const SizedBox(height: 5),
               const Text(
                 'INKSPHERE',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
-                  //color: Color.fromARGB(255, 47, 123, 123),
                   color: Color(0xFFD96E30),
                 ),
               ),
@@ -98,10 +82,33 @@ class _SignInPageState extends State<SignInPage> {
               SizedBox(
                 width: 300,
                 child: TextField(
+                  controller: _nameController,
+                  decoration: const InputDecoration(
+                    labelText: 'Name',
+                    hintText: 'Enter your name',
+                    labelStyle: TextStyle(color: Color(0xFF5D8C8C)),
+                    hintStyle: TextStyle(color: Color(0xFF5D8C8C)),
+                    border: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF5D8C8C)),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFF5D8C8C)),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(color: Color(0xFFF29544)),
+                    ),
+                    prefixIcon: Icon(Icons.person, color: Color(0xFF5D8C8C)),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 20),
+              SizedBox(
+                width: 300,
+                child: TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
                     labelText: 'Email',
-                    hintText: 'Entrez votre email',
+                    hintText: 'Enter your email',
                     labelStyle: TextStyle(color: Color(0xFF5D8C8C)),
                     hintStyle: TextStyle(color: Color(0xFF5D8C8C)),
                     border: OutlineInputBorder(
@@ -125,8 +132,8 @@ class _SignInPageState extends State<SignInPage> {
                   controller: _passwordController,
                   obscureText: true,
                   decoration: const InputDecoration(
-                    labelText: 'Mot de passe',
-                    hintText: 'Entrez votre mot de passe',
+                    labelText: 'Password',
+                    hintText: 'Enter your password',
                     labelStyle: TextStyle(color: Color(0xFF5D8C8C)),
                     hintStyle: TextStyle(color: Color(0xFF5D8C8C)),
                     border: OutlineInputBorder(
@@ -144,48 +151,23 @@ class _SignInPageState extends State<SignInPage> {
               ),
               const SizedBox(height: 30),
               ElevatedButton(
-                onPressed: () {
-                  String email = _emailController.text;
-                  String password = _passwordController.text;
-                  print('Email: $email, Mot de passe: $password');
-                  signIn(email, password);
-                },
+                onPressed: signUp,
                 style: ElevatedButton.styleFrom(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
+                  padding: const EdgeInsets.symmetric(horizontal: 100, vertical: 15),
                   backgroundColor: const Color(0xFFA65233),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30),
                   ),
                 ),
-                child: const Text('Sign In',
-                    style: TextStyle(
-                        fontSize: 18,
-                        color: Color.fromARGB(255, 246, 236, 224))),
-              ),
-
-              const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account? "),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignUpPage()),
-                    );
-                  },
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Color(0xFFD96E30),
-                      fontWeight: FontWeight.bold,
-                    ),
+                child: const Text(
+                  'Sign Up',
+                  style: TextStyle(
+                    fontSize: 18,
+                    color: Color.fromARGB(255, 246, 236, 224),
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(height: 10),
             ],
           ),
         ),

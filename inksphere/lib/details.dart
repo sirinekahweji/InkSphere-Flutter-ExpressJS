@@ -74,7 +74,7 @@ class DetailsPage extends StatelessWidget {
                         Uri.parse(
                             'http://localhost:5000/api/book/${bookdetails.id}'),
                         headers: {'Content-Type': 'application/json'},
-                        body: json.encode({'statu': 0}),
+                        body: json.encode({'statu': 0,'userId':''}),
                       );
 
                       if (response.statusCode == 200) {
@@ -86,7 +86,7 @@ class DetailsPage extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      ' Book borrowed successfully',
+                                      ' Book is Available',
                                       style: TextStyle(
                                         color:
                                             Color.fromARGB(255, 253, 254, 254),
@@ -103,7 +103,7 @@ class DetailsPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            backgroundColor: Color.fromARGB(255, 68, 81, 56),
+                            backgroundColor:  Color.fromARGB(255, 6, 104, 86),
                             duration: Duration(seconds: 4),
                           ),
                         );
@@ -118,10 +118,10 @@ class DetailsPage extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: const Color.fromARGB(255, 4, 88, 73),
+                    backgroundColor:const Color.fromARGB(255, 6, 104, 86),
                   ),
                   child: const Text(
-                    'Available Book 😊',
+                    'Available',
                     style: TextStyle(
                       fontSize: 16,
                       color: Colors.white,
