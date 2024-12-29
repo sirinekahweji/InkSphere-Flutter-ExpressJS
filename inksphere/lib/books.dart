@@ -74,9 +74,11 @@ class _BooksPageState extends State<Books> {
 
     if (response.statusCode == 200) {
       fetchBooks();
-      Navigator.pop(context);
+      //Navigator.pop(context);
     } else {
       throw Exception('Failed to add book');
+           // Navigator.pop(context);
+
     }
   }
 
@@ -98,7 +100,7 @@ class _BooksPageState extends State<Books> {
 
     if (response.statusCode == 200) {
       fetchBooks();
-      Navigator.pop(context);
+      //Navigator.pop(context);
     } else {
       throw Exception('Failed to update book');
     }

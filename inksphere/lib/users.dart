@@ -66,12 +66,14 @@ class _UsersPageState extends State<Users> {
 
     if (response.statusCode == 200) {
       fetchUsers();
-      clearForm();
     } else {
       throw Exception('Failed to add user');
     }
-    Navigator.pop(context);
+    //Navigator.pop(context);
+          clearForm();
+
   }
+
 
   Future<void> updateUser(String userId) async {
     final updatedUser = {
@@ -88,11 +90,15 @@ class _UsersPageState extends State<Users> {
 
     if (response.statusCode == 200) {
       fetchUsers();
-      clearForm();
+          //Navigator.pop(context);
+
     } else {
       throw Exception('Failed to update user');
+               // Navigator.pop(context);
+
     }
-    Navigator.pop(context);
+    clearForm();
+
   }
 
   Future<void> showDeleteConfirmationDialog(String userId) async {
