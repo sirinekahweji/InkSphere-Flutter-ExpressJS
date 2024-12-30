@@ -24,7 +24,7 @@ class _UsersPageState extends State<Users> {
 
   Future<void> fetchUsers() async {
     final response =
-        await http.get(Uri.parse('http://localhost:5000/api/user'));
+        await http.get(Uri.parse('http://192.168.1.4:5000/api/user'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -59,46 +59,45 @@ class _UsersPageState extends State<Users> {
     };
 
     final response = await http.post(
-      Uri.parse('http://localhost:5000/api/user/signup'),
+      Uri.parse('http://192.168.1.4:5000/api/user/signup'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newUser),
     );
 
     if (response.statusCode == 200) {
       fetchUsers();
+      clearForm();
     } else {
+      clearForm();
       throw Exception('Failed to add user');
     }
-    //Navigator.pop(context);
-          clearForm();
+    clearForm();
 
+    Navigator.pop(context);
   }
-
 
   Future<void> updateUser(String userId) async {
     final updatedUser = {
       'name': nameController.text,
-      'email': emailController.text,
-      'password': passwordController.text,
+      'email': emailController.text
     };
 
     final response = await http.put(
-      Uri.parse('http://localhost:5000/api/user/update/$userId'),
+      Uri.parse('http://192.168.1.4:5000/api/user/update/$userId'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updatedUser),
     );
 
     if (response.statusCode == 200) {
       fetchUsers();
-          //Navigator.pop(context);
-
+      clearForm();
+      Navigator.pop(context);
     } else {
+      clearForm();
+      Navigator.pop(context);
       throw Exception('Failed to update user');
-               // Navigator.pop(context);
-
     }
     clearForm();
-
   }
 
   Future<void> showDeleteConfirmationDialog(String userId) async {
@@ -136,7 +135,7 @@ class _UsersPageState extends State<Users> {
 
   Future<void> deleteUser(String userId) async {
     final response = await http.delete(
-      Uri.parse('http://localhost:5000/api/user/delete/$userId'),
+      Uri.parse('http://192.168.1.4:5000/api/user/delete/$userId'),
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -214,7 +213,7 @@ class _UsersPageState extends State<Users> {
                       builder: (context) {
                         return AlertDialog(
                           title: const Text('Add New User'),
-                          content: UserForm(
+                          content: AddUserForm(
                             nameController: nameController,
                             emailController: emailController,
                             passwordController: passwordController,
@@ -279,10 +278,9 @@ class _UsersPageState extends State<Users> {
                               builder: (context) {
                                 return AlertDialog(
                                   title: const Text('Edit User'),
-                                  content: UserForm(
+                                  content: UpdateUserForm(
                                     nameController: nameController,
                                     emailController: emailController,
-                                    passwordController: passwordController,
                                     onSubmit: () => updateUser(user.id),
                                   ),
                                 );
@@ -310,13 +308,13 @@ class _UsersPageState extends State<Users> {
   }
 }
 
-class UserForm extends StatelessWidget {
+class AddUserForm extends StatelessWidget {
   final TextEditingController nameController;
   final TextEditingController emailController;
   final TextEditingController passwordController;
   final Future<void> Function() onSubmit;
 
-  const UserForm({
+  const AddUserForm({
     super.key,
     required this.nameController,
     required this.emailController,
@@ -345,7 +343,41 @@ class UserForm extends StatelessWidget {
         const SizedBox(height: 16),
         ElevatedButton(
           onPressed: onSubmit,
-          child: const Text('Submit'),
+          child: const Text('Add User'),
+        ),
+      ],
+    );
+  }
+}
+
+class UpdateUserForm extends StatelessWidget {
+  final TextEditingController nameController;
+  final TextEditingController emailController;
+  final Future<void> Function() onSubmit;
+
+  const UpdateUserForm({
+    super.key,
+    required this.nameController,
+    required this.emailController,
+    required this.onSubmit,
+  });
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        TextField(
+          controller: nameController,
+          decoration: const InputDecoration(labelText: 'Name'),
+        ),
+        TextField(
+          controller: emailController,
+          decoration: const InputDecoration(labelText: 'Email'),
+        ),
+        const SizedBox(height: 16),
+        ElevatedButton(
+          onPressed: onSubmit,
+          child: const Text('Update User'),
         ),
       ],
     );

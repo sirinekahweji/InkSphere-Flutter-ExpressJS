@@ -25,9 +25,7 @@ class _HomePageState extends State<HomePage> {
   List<Book> books = [];
 
   Future<void> fetchBooks() async {
-    final response =
-        await http.get(Uri.parse('http://localhost:5000/api/book/dispo'));
-
+    final response = await http.get(Uri.parse('http://192.168.1.4:5000/api/book/dispo'));
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
       setState(() {

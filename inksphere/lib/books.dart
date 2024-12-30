@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:image_picker/image_picker.dart'; // Importez le package image_picker
 import 'dart:convert';
+import 'dart:io'; // Pour manipuler les fichiers image
 import 'package:http/http.dart' as http;
 import 'package:inksphere/Book.dart';
 import 'package:inksphere/details.dart';
+import 'package:http/http.dart' show MediaType;
+
 
 class Books extends StatefulWidget {
   final dynamic idUser;
@@ -20,16 +24,18 @@ class _BooksPageState extends State<Books> {
   final TextEditingController titleController = TextEditingController();
   final TextEditingController authorController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
-  final TextEditingController imageController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
+
+  // Variable pour stocker l'image sélectionnée
+  File? _imageFile;
 
   final FocusNode _searchFocusNode = FocusNode();
 
   Future<void> fetchBooks() async {
     final response =
-        await http.get(Uri.parse('http://localhost:5000/api/book'));
+        await http.get(Uri.parse('http://192.168.1.4:5000/api/book'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -57,51 +63,64 @@ class _BooksPageState extends State<Books> {
   }
 
   Future<void> addBook() async {
-    final newBook = {
-      'title': titleController.text,
-      'author': authorController.text,
-      'description': descriptionController.text,
-      'image': imageController.text,
-      'price': priceController.text,
-      'category': categoryController.text,
-    };
+  var uri = Uri.parse('http://192.168.1.4:5000/api/book/add');
+  var request = http.MultipartRequest('POST', uri);
 
-    final response = await http.post(
-      Uri.parse('http://localhost:5000/api/book/add'),
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode(newBook),
+  request.fields['title'] = titleController.text;
+  request.fields['author'] = authorController.text;
+  request.fields['description'] = descriptionController.text;
+  request.fields['price'] = priceController.text;
+  request.fields['category'] = categoryController.text;
+
+  if (_imageFile != null) {
+    var imageBytes = await _imageFile!.readAsBytes();
+    var imageMultipart = http.MultipartFile.fromBytes(
+      'image',
+      imageBytes,
+      filename: _imageFile!.path.split('/').last, 
     );
+    request.files.add(imageMultipart);
+  }
+
+  try {
+    final response = await request.send();
 
     if (response.statusCode == 200) {
       fetchBooks();
-      //Navigator.pop(context);
+      Navigator.pop(context);
     } else {
+      Navigator.pop(context);
       throw Exception('Failed to add book');
-           // Navigator.pop(context);
-
     }
+  } catch (e) {
+    Navigator.pop(context);
+    print(e);
+    throw Exception('Failed to add book');
   }
+}
+
 
   Future<void> updateBook(String bookId) async {
     final updatedBook = {
       'title': titleController.text,
       'author': authorController.text,
       'description': descriptionController.text,
-      'image': imageController.text,
+      'image': _imageFile != null ? base64Encode(_imageFile!.readAsBytesSync()) : '',
       'price': priceController.text,
       'category': categoryController.text,
     };
 
     final response = await http.put(
-      Uri.parse('http://localhost:5000/api/book/$bookId'),
+      Uri.parse('http://192.168.1.4:5000/api/book/$bookId'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updatedBook),
     );
 
     if (response.statusCode == 200) {
       fetchBooks();
-      //Navigator.pop(context);
+      Navigator.pop(context);
     } else {
+      Navigator.of(context).pop();
       throw Exception('Failed to update book');
     }
   }
@@ -135,7 +154,7 @@ class _BooksPageState extends State<Books> {
 
   Future<void> deleteBook(String bookId) async {
     final response = await http.delete(
-      Uri.parse('http://localhost:5000/api/book/$bookId'),
+      Uri.parse('http://192.168.1.4:5000/api/book/$bookId'),
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -144,6 +163,17 @@ class _BooksPageState extends State<Books> {
       });
     } else {
       throw Exception('Failed to delete book');
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final picker = ImagePicker();
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
+    if (pickedFile != null) {
+      setState(() {
+        _imageFile = File(pickedFile.path);
+      });
     }
   }
 
@@ -182,7 +212,6 @@ class _BooksPageState extends State<Books> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                // Search TextField
                 SizedBox(
                   width: 300,
                   height: 40,
@@ -193,7 +222,7 @@ class _BooksPageState extends State<Books> {
                       hintText: 'Search books...',
                       border: OutlineInputBorder(
                         borderRadius:
-                            BorderRadius.circular(30), // Rounded corners
+                            BorderRadius.circular(30),
                         borderSide: BorderSide(
                           color: _searchFocusNode.hasFocus
                               ? const Color(0xFF6F4F37)
@@ -221,9 +250,10 @@ class _BooksPageState extends State<Books> {
                             titleController: titleController,
                             authorController: authorController,
                             descriptionController: descriptionController,
-                            imageController: imageController,
                             priceController: priceController,
                             categoryController: categoryController,
+                            imageFile: _imageFile,
+                            onImagePick: _pickImage, // Passer la fonction de sélection d'image
                             onSubmit: addBook,
                           ),
                         );
@@ -298,7 +328,6 @@ class _BooksPageState extends State<Books> {
                             titleController.text = book.title;
                             authorController.text = book.author;
                             descriptionController.text = book.description;
-                            imageController.text = book.image ?? '';
                             priceController.text = book.price ?? '';
                             categoryController.text = book.category ?? '';
                             showDialog(
@@ -311,9 +340,10 @@ class _BooksPageState extends State<Books> {
                                     authorController: authorController,
                                     descriptionController:
                                         descriptionController,
-                                    imageController: imageController,
                                     priceController: priceController,
                                     categoryController: categoryController,
+                                    imageFile: _imageFile,
+                                    onImagePick: _pickImage, // Passer la fonction de sélection d'image
                                     onSubmit: () => updateBook(book.id),
                                   ),
                                 );
@@ -345,19 +375,21 @@ class BookForm extends StatelessWidget {
   final TextEditingController titleController;
   final TextEditingController authorController;
   final TextEditingController descriptionController;
-  final TextEditingController imageController;
   final TextEditingController priceController;
   final TextEditingController categoryController;
+  final File? imageFile;
   final Future<void> Function() onSubmit;
+  final VoidCallback onImagePick;
 
   const BookForm({
     super.key,
     required this.titleController,
     required this.authorController,
     required this.descriptionController,
-    required this.imageController,
     required this.priceController,
     required this.categoryController,
+    required this.imageFile,
+    required this.onImagePick,
     required this.onSubmit,
   });
 
@@ -379,10 +411,6 @@ class BookForm extends StatelessWidget {
           decoration: const InputDecoration(labelText: 'Description'),
         ),
         TextField(
-          controller: imageController,
-          decoration: const InputDecoration(labelText: 'Image URL'),
-        ),
-        TextField(
           controller: priceController,
           decoration: const InputDecoration(labelText: 'Price'),
         ),
@@ -390,14 +418,31 @@ class BookForm extends StatelessWidget {
           controller: categoryController,
           decoration: const InputDecoration(labelText: 'Category'),
         ),
-        const SizedBox(height: 16),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            imageFile != null
+                ? Image.file(
+                    imageFile!,
+                    width: 70,
+                    height: 70,
+                    fit: BoxFit.cover,
+                  )
+                : const Text('No image selected'),
+            IconButton(
+              icon: const Icon(Icons.camera_alt),
+              onPressed: onImagePick,
+            ),
+          ],
+        ),
+        const SizedBox(height: 10),
         ElevatedButton(
           onPressed: onSubmit,
           style: ElevatedButton.styleFrom(
-            foregroundColor: Colors.white,
             backgroundColor: const Color(0xFFA65233),
+            foregroundColor: Colors.white,
           ),
-          child: const Text('Submit'),
+          child: const Text('Save'),
         ),
       ],
     );

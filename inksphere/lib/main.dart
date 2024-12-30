@@ -35,7 +35,8 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> signIn(String email, String password) async {
-    final url = Uri.parse('http://localhost:5000/api/user');
+    final url = Uri.parse('http://192.168.1.4:5000/api/user');
+
 
     final response = await http.post(
       url,
@@ -144,6 +145,7 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               const SizedBox(height: 30),
+              
               ElevatedButton(
                 onPressed: () {
                   String email = _emailController.text;

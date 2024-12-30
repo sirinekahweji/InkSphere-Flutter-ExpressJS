@@ -71,8 +71,7 @@ class DetailsPage extends StatelessWidget {
                   onPressed: () async {
                     try {
                       final response = await http.put(
-                        Uri.parse(
-                            'http://localhost:5000/api/book/${bookdetails.id}'),
+                        Uri.parse('http://192.168.1.4:5000/api/book/${bookdetails.id}'),
                         headers: {'Content-Type': 'application/json'},
                         body: json.encode({'statu': 0,'userId':''}),
                       );
