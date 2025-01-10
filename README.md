@@ -1,13 +1,13 @@
-#  Projet Flutter et Express.js "InkSphere"
+# Projet Flutter et Express.js "InkSphere"
+## backend : Express.js 
+``` npm i```
+``` nodemon server.js```
 
-## Backend : Express.js 
+## frontend : Flutter
+``` flutter pub get ```
+``` flutter run ```
 
-Pour initialiser et installer les dépendances du backend :
-npm i
-nodemon server.js
-## Frontend : Flutter 
-flutter pub get  
-flutter run
-
+## 📺 Watch Video
+[https://youtu.be/ZeQDkF9ouOs?si=uqNCF5V61_iJXQDt]
 
 
