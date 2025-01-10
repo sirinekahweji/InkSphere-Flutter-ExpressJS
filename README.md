@@ -1,4 +1,4 @@
-# Projet Flutter et Express.js "InkSphere"
+# Projet Flutter et Express.js "InkSphere 📚"
 ## Backend : Express.js 
 ``` npm i```
 ``` nodemon server.js```
