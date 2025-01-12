@@ -66,38 +66,36 @@ class _BooksPageState extends State<Books> {
   var uri = Uri.parse('http://192.168.1.4:5000/api/book/add');
   var request = http.MultipartRequest('POST', uri);
 
+  // Ajout des champs du formulaire
   request.fields['title'] = titleController.text;
   request.fields['author'] = authorController.text;
   request.fields['description'] = descriptionController.text;
   request.fields['price'] = priceController.text;
   request.fields['category'] = categoryController.text;
-
-  if (_imageFile != null) {
-    var imageBytes = await _imageFile!.readAsBytes();
-    var imageMultipart = http.MultipartFile.fromBytes(
-      'image',
-      imageBytes,
-      filename: _imageFile!.path.split('/').last, 
-    );
-    request.files.add(imageMultipart);
-  }
+  request.fields['image'] = _imageFile != null ? base64Encode(_imageFile!.readAsBytesSync()) : '';
 
   try {
     final response = await request.send();
 
-    if (response.statusCode == 200) {
-      fetchBooks();
-      Navigator.pop(context);
+    // Vérification du statut de la réponse
+    if (response.statusCode == 201) { // 201 = Created (succès)
+      fetchBooks(); // Met à jour la liste des livres
+      Navigator.pop(context); // Retourne à l'écran précédent
     } else {
+      // Gestion des erreurs en cas de réponse non satisfaisante
+      var responseBody = await response.stream.bytesToString();
+      print('Erreur : ${response.statusCode}, Réponse : $responseBody');
       Navigator.pop(context);
-      throw Exception('Failed to add book');
+      throw Exception('Échec de l\'ajout du livre');
     }
   } catch (e) {
+    // Gestion des exceptions
     Navigator.pop(context);
-    print(e);
-    throw Exception('Failed to add book');
+    print('Erreur : $e');
+    throw Exception('Échec de l\'ajout du livre');
   }
 }
+
 
 
   Future<void> updateBook(String bookId) async {

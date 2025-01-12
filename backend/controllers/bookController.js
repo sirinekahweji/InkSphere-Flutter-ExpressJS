@@ -6,13 +6,15 @@ const Book = require('../models/bookModel');
 
 const createBook = async (req, res) => {
   try {
-    const { title, author, price, description, category} = req.body;
+    const { title, author, price, description, category,image} = req.body;
+    /*console.log('Uploaded file:', req.file);*/
     console.log(title, author, price, description, category);
-    let imageBase64 = null;
+
+    /*let imageBase64 = null;
     if (req.file) {
       imageBase64 = `data:${req.file.mimetype};base64,${req.file.buffer.toString('base64')}`;
     }
-
+*/
     const book = new Book({
       title,
       author,
@@ -21,7 +23,7 @@ const createBook = async (req, res) => {
       category,
       statu:0,
       userId:null,
-      image: imageBase64, 
+      image, 
     });
 
     const savedBook = await book.save();
@@ -43,16 +45,19 @@ const getBorrowedBooks = async (req, res) => {
 
 
 const getAllBooks = async (req, res) => {
+
   try {
     const books = await Book.find();
     res.status(200).json(books);
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la récupération des livres', error });
   }
+
 };
 
 
 const getBooksByUserId = async (req, res) => {
+
   try {
     const userId = req.params.userId; 
     const books = await Book.find({ userId }); 
@@ -61,6 +66,7 @@ const getBooksByUserId = async (req, res) => {
   } catch (error) {
     res.status(500).json({ message: 'Erreur lors de la récupération des livres de l\'utilisateur', error });
   }
+
 };
 
 
