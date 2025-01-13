@@ -1,13 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:image_picker/image_picker.dart'; // Importez le package image_picker
+import 'package:image_picker/image_picker.dart';
 import 'dart:convert';
-import 'dart:io'; // Pour manipuler les fichiers image
+import 'dart:io';
 import 'package:http/http.dart' as http;
 import 'package:inksphere/Book.dart';
 import 'package:inksphere/details.dart';
 import 'package:http/http.dart' show MediaType;
-
 
 class Books extends StatefulWidget {
   final dynamic idUser;
@@ -28,14 +27,13 @@ class _BooksPageState extends State<Books> {
   final TextEditingController categoryController = TextEditingController();
   final TextEditingController searchController = TextEditingController();
 
-  // Variable pour stocker l'image sélectionnée
   File? _imageFile;
 
   final FocusNode _searchFocusNode = FocusNode();
 
   Future<void> fetchBooks() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.4:5000/api/book'));
+        await http.get(Uri.parse('http://192.168.1.2:5000/api/book'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -63,53 +61,96 @@ class _BooksPageState extends State<Books> {
   }
 
   Future<void> addBook() async {
-  var uri = Uri.parse('http://192.168.1.4:5000/api/book/add');
+      Navigator.pop(context); 
+    showDialog(
+    context: context,
+    builder: (BuildContext context) {
+      return AlertDialog(
+        title: Text('Confirm Add Book'),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            if (_imageFile != null)
+              Image.file(
+                _imageFile!,
+                width: 100,
+                height: 150,
+                fit: BoxFit.cover,
+              ),
+            Text('Title: ${titleController.text}'),
+            Text('Author: ${authorController.text}'),
+            Text('Description: ${descriptionController.text}'),
+            Text('Price: ${priceController.text}'),
+            Text('Category: ${categoryController.text}'),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Cancel'),
+          ),
+          TextButton(
+            onPressed: () async {
+              Navigator.of(context).pop();
+              await submitBook(); 
+            },
+            child: Text('Confirm'),
+          ),
+        ],
+      );
+    },
+  );
+}
+
+   Future<void> submitBook() async {
+  var uri = Uri.parse('http://192.168.1.2:5000/api/book/');
   var request = http.MultipartRequest('POST', uri);
 
-  // Ajout des champs du formulaire
   request.fields['title'] = titleController.text;
   request.fields['author'] = authorController.text;
   request.fields['description'] = descriptionController.text;
   request.fields['price'] = priceController.text;
   request.fields['category'] = categoryController.text;
-  request.fields['image'] = _imageFile != null ? base64Encode(_imageFile!.readAsBytesSync()) : '';
+  if (_imageFile != null) {
+    var image = await http.MultipartFile.fromPath('image', _imageFile!.path);
+    request.files.add(image);
+  }
 
   try {
     final response = await request.send();
 
-    // Vérification du statut de la réponse
-    if (response.statusCode == 201) { // 201 = Created (succès)
-      fetchBooks(); // Met à jour la liste des livres
-      Navigator.pop(context); // Retourne à l'écran précédent
+    if (response.statusCode == 201) {
+      fetchBooks(); 
+      Navigator.pop(context); 
     } else {
-      // Gestion des erreurs en cas de réponse non satisfaisante
       var responseBody = await response.stream.bytesToString();
       print('Erreur : ${response.statusCode}, Réponse : $responseBody');
-      Navigator.pop(context);
       throw Exception('Échec de l\'ajout du livre');
     }
   } catch (e) {
-    // Gestion des exceptions
-    Navigator.pop(context);
     print('Erreur : $e');
     throw Exception('Échec de l\'ajout du livre');
   }
 }
 
-
-
   Future<void> updateBook(String bookId) async {
+     var image = null;
+    if (_imageFile != null) {
+      image = await http.MultipartFile.fromPath('image', _imageFile!.path);
+    }
     final updatedBook = {
       'title': titleController.text,
       'author': authorController.text,
       'description': descriptionController.text,
-      'image': _imageFile != null ? base64Encode(_imageFile!.readAsBytesSync()) : '',
       'price': priceController.text,
       'category': categoryController.text,
+      'image': image
     };
 
     final response = await http.put(
-      Uri.parse('http://192.168.1.4:5000/api/book/$bookId'),
+      Uri.parse('http://192.168.1.2:5000/api/book/$bookId'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updatedBook),
     );
@@ -152,7 +193,7 @@ class _BooksPageState extends State<Books> {
 
   Future<void> deleteBook(String bookId) async {
     final response = await http.delete(
-      Uri.parse('http://192.168.1.4:5000/api/book/$bookId'),
+      Uri.parse('http://192.168.1.2:5000/api/book/$bookId'),
     );
     if (response.statusCode == 200) {
       setState(() {
@@ -219,8 +260,7 @@ class _BooksPageState extends State<Books> {
                     decoration: InputDecoration(
                       hintText: 'Search books...',
                       border: OutlineInputBorder(
-                        borderRadius:
-                            BorderRadius.circular(30),
+                        borderRadius: BorderRadius.circular(30),
                         borderSide: BorderSide(
                           color: _searchFocusNode.hasFocus
                               ? const Color(0xFF6F4F37)
@@ -251,7 +291,7 @@ class _BooksPageState extends State<Books> {
                             priceController: priceController,
                             categoryController: categoryController,
                             imageFile: _imageFile,
-                            onImagePick: _pickImage, // Passer la fonction de sélection d'image
+                            onImagePick: _pickImage,
                             onSubmit: addBook,
                           ),
                         );
@@ -295,7 +335,7 @@ class _BooksPageState extends State<Books> {
                         ? Image.memory(
                             base64Decode(
                               book.image!
-                                  .replaceFirst('data:image/jpeg;base64,', ''),
+                                  .replaceFirst('data:application/octet-stream;base64,', ''),
                             ),
                             width: 70,
                             height: 70,
@@ -341,7 +381,8 @@ class _BooksPageState extends State<Books> {
                                     priceController: priceController,
                                     categoryController: categoryController,
                                     imageFile: _imageFile,
-                                    onImagePick: _pickImage, // Passer la fonction de sélection d'image
+                                    onImagePick:
+                                        _pickImage, // Passer la fonction de sélection d'image
                                     onSubmit: () => updateBook(book.id),
                                   ),
                                 );

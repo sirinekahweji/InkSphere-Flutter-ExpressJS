@@ -2,7 +2,11 @@ const Book = require('../models/bookModel');
 
 const createBook = async (req, res) => {
   try {
+    console.log('dans add book1', );
+
     const { title, author, price, description, category } = req.body;
+    console.log('dans add book2', );
+
     console.log('Uploaded file:', req.file);
     console.log(title, author, price, description, category);
 
@@ -112,6 +116,7 @@ const updateBook = async (req, res) => {
     if (!updatedBook) {
       return res.status(404).json({ message: 'Livre non trouvé' });
     }
+    console.log("updatedBook",updatedBook);
 
     res.status(200).json(updatedBook);
   } catch (error) {

@@ -27,7 +27,6 @@ class SignInPage extends StatefulWidget {
 
   @override
   _SignInPageState createState() => _SignInPageState();
-  
 }
 
 class _SignInPageState extends State<SignInPage> {
@@ -35,8 +34,7 @@ class _SignInPageState extends State<SignInPage> {
   final TextEditingController _passwordController = TextEditingController();
 
   Future<void> signIn(String email, String password) async {
-    final url = Uri.parse('http://192.168.1.4:5000/api/user');
-
+    final url = Uri.parse('http://192.168.1.2:5000/api/user');
 
     final response = await http.post(
       url,
@@ -50,6 +48,7 @@ class _SignInPageState extends State<SignInPage> {
     );
 
     if (response.statusCode == 200) {
+      print("response ok");
       final responseData = json.decode(response.body);
       final token = responseData['token'];
       final email = responseData['email'];
@@ -145,7 +144,6 @@ class _SignInPageState extends State<SignInPage> {
                 ),
               ),
               const SizedBox(height: 30),
-              
               ElevatedButton(
                 onPressed: () {
                   String email = _emailController.text;
@@ -166,29 +164,29 @@ class _SignInPageState extends State<SignInPage> {
                         fontSize: 18,
                         color: Color.fromARGB(255, 246, 236, 224))),
               ),
-
               const SizedBox(height: 10),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Text("Don't have an account? "),
-                GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => const SignUpPage()),
-                    );
-                  },
-                  child: const Text(
-                    'Sign Up',
-                    style: TextStyle(
-                      color: Color(0xFFD96E30),
-                      fontWeight: FontWeight.bold,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  const Text("Don't have an account? "),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const SignUpPage()),
+                      );
+                    },
+                    child: const Text(
+                      'Sign Up',
+                      style: TextStyle(
+                        color: Color(0xFFD96E30),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
             ],
           ),
         ),

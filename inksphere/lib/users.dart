@@ -24,7 +24,7 @@ class _UsersPageState extends State<Users> {
 
   Future<void> fetchUsers() async {
     final response =
-        await http.get(Uri.parse('http://192.168.1.4:5000/api/user'));
+        await http.get(Uri.parse('http://192.168.1.2:5000/api/user'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -59,7 +59,7 @@ class _UsersPageState extends State<Users> {
     };
 
     final response = await http.post(
-      Uri.parse('http://192.168.1.4:5000/api/user/signup'),
+      Uri.parse('http://192.168.1.2:5000/api/user/signup'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(newUser),
     );
@@ -83,7 +83,7 @@ class _UsersPageState extends State<Users> {
     };
 
     final response = await http.put(
-      Uri.parse('http://192.168.1.4:5000/api/user/update/$userId'),
+      Uri.parse('http://192.168.1.2:5000/api/user/update/$userId'),
       headers: {'Content-Type': 'application/json'},
       body: json.encode(updatedUser),
     );
@@ -135,7 +135,7 @@ class _UsersPageState extends State<Users> {
 
   Future<void> deleteUser(String userId) async {
     final response = await http.delete(
-      Uri.parse('http://192.168.1.4:5000/api/user/delete/$userId'),
+      Uri.parse('http://192.168.1.2:5000/api/user/delete/$userId'),
     );
     if (response.statusCode == 200) {
       setState(() {
