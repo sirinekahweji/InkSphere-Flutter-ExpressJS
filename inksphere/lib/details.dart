@@ -42,7 +42,7 @@ class DetailsPage extends StatelessWidget {
                     ? Image.memory(
                         base64Decode(
                           bookdetails.image!
-                              .replaceFirst('data:image/jpeg;base64,', ''),
+                              .replaceFirst('data:application/octet-stream;base64,', ''),
                         ),
                         width: 150,
                         height: 150,

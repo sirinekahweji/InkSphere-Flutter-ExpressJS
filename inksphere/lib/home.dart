@@ -180,7 +180,7 @@ class _HomePageState extends State<HomePage> {
                           ? Image.memory(
                               base64Decode(
                                 book.image!.replaceFirst(
-                                    'data:image/jpeg;base64,', ''),
+                                    'data:application/octet-stream;base64,', ''),
                               ),
                               width: 50,
                               height: 50,

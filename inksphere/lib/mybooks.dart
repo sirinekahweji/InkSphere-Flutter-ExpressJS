@@ -19,7 +19,7 @@ class _MyBooksPageState extends State<MyBooks> {
 
   Future<void> fetchBooks() async {
     final response = await http
-        .get(Uri.parse('http://localhost:5000/api/book/user/${widget.idUser}'));
+        .get(Uri.parse('http://192.168.1.2:5000/api/book/user/${widget.idUser}'));
 
     if (response.statusCode == 200) {
       final List<dynamic> data = json.decode(response.body);
@@ -79,7 +79,7 @@ class _MyBooksPageState extends State<MyBooks> {
                             ? Image.memory(
                                 base64Decode(
                                   book.image!.replaceFirst(
-                                      'data:image/jpeg;base64,', ''),
+                                      'data:application/octet-stream;base64,', ''),
                                 ),
                                 width: 70,
                                 height: 70,
