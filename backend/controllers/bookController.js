@@ -2,10 +2,8 @@ const Book = require('../models/bookModel');
 
 const createBook = async (req, res) => {
   try {
-    console.log('dans add book1', );
 
     const { title, author, price, description, category } = req.body;
-    console.log('dans add book2', );
 
     console.log('Uploaded file:', req.file);
     console.log(title, author, price, description, category);
@@ -88,8 +86,8 @@ const getBookById = async (req, res) => {
 
 const updateBook = async (req, res) => {
   try {
-    const { title, author, price, description, category ,statu} = req.body;
-    console.log(title, author, price, description, category ,statu);
+    const { title, author, price, description, category ,statu,userId} = req.body;
+    console.log(title, author, price, description, category ,statu,userId);
 
     let imageBase64 = null;
     if (req.file) {
@@ -104,7 +102,7 @@ const updateBook = async (req, res) => {
       description,
       category,
       statu, 
-      userId: req.params.id, 
+      userId, 
     };
 
     if (imageBase64) {

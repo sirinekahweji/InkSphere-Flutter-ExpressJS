@@ -25,6 +25,8 @@ class DetailsPage extends StatelessWidget {
         ),
       ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('/ng.png'),
@@ -44,8 +46,8 @@ class DetailsPage extends StatelessWidget {
                           bookdetails.image!
                               .replaceFirst('data:application/octet-stream;base64,', ''),
                         ),
-                        width: 150,
-                        height: 150,
+                        width: 300,
+                        height: 300,
                       )
                     : const SizedBox.shrink(),
                 const SizedBox(height: 20),
@@ -73,7 +75,7 @@ class DetailsPage extends StatelessWidget {
                       final response = await http.put(
                         Uri.parse('http://192.168.1.2:5000/api/book/${bookdetails.id}'),
                         headers: {'Content-Type': 'application/json'},
-                        body: json.encode({'statu': 0,'userId':''}),
+                        body: json.encode({'statu': 0, 'userId': ''}),
                       );
 
                       if (response.statusCode == 200) {
@@ -85,10 +87,9 @@ class DetailsPage extends StatelessWidget {
                                   mainAxisAlignment: MainAxisAlignment.center,
                                   children: [
                                     Text(
-                                      ' Book is Available',
+                                      'Book is Available',
                                       style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 253, 254, 254),
+                                        color: Color.fromARGB(255, 253, 254, 254),
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -102,7 +103,7 @@ class DetailsPage extends StatelessWidget {
                                 ),
                               ],
                             ),
-                            backgroundColor:  Color.fromARGB(255, 6, 104, 86),
+                            backgroundColor: Color.fromARGB(255, 6, 104, 86),
                             duration: Duration(seconds: 4),
                           ),
                         );
@@ -117,7 +118,7 @@ class DetailsPage extends StatelessWidget {
                     }
                   },
                   style: ElevatedButton.styleFrom(
-                    backgroundColor:const Color.fromARGB(255, 6, 104, 86),
+                    backgroundColor: const Color.fromARGB(255, 6, 104, 86),
                   ),
                   child: const Text(
                     'Available',

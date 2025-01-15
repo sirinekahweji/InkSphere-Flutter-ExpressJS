@@ -87,13 +87,13 @@ class _BooksPageState extends State<Books> {
         actions: [
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
             },
             child: Text('Cancel'),
           ),
           TextButton(
             onPressed: () async {
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
               await submitBook(); 
             },
             child: Text('Confirm'),

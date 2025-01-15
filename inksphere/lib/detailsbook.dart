@@ -26,6 +26,8 @@ class BookDetailsPage extends StatelessWidget {
         ),
       ),
       body: Container(
+        width: double.infinity,
+        height: double.infinity,
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage('/ng.png'),
@@ -43,10 +45,10 @@ class BookDetailsPage extends StatelessWidget {
                     ? Image.memory(
                         base64Decode(
                           book.image!
-                              .replaceFirst('data:image/jpeg;base64,', ''),
+                              .replaceFirst('data:application/octet-stream;base64,', ''),
                         ),
-                        width: 150,
-                        height: 150,
+                        width: 300,
+                        height: 300,
                       )
                     : const SizedBox.shrink(),
                 const SizedBox(height: 20),
@@ -80,26 +82,21 @@ class BookDetailsPage extends StatelessWidget {
                       if (response.statusCode == 200) {
                         ScaffoldMessenger.of(context).showSnackBar(
                           const SnackBar(
-                            content: Column(
+                            content: Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
                               children: [
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      ' Book borrowed successfully',
-                                      style: TextStyle(
-                                        color:
-                                            Color.fromARGB(255, 253, 254, 254),
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                    SizedBox(width: 10),
-                                    Icon(
-                                      Icons.check_circle,
-                                      color: Color.fromARGB(255, 251, 252, 251),
-                                      size: 24,
-                                    ),
-                                  ],
+                                Text(
+                                  ' Book borrowed successfully',
+                                  style: TextStyle(
+                                    color: Color.fromARGB(255, 253, 254, 254),
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                                SizedBox(width: 10),
+                                Icon(
+                                  Icons.check_circle,
+                                  color: Color.fromARGB(255, 251, 252, 251),
+                                  size: 24,
                                 ),
                               ],
                             ),
@@ -113,7 +110,8 @@ class BookDetailsPage extends StatelessWidget {
                     } catch (e) {
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                            content: Text('Error borrowing the book')),
+                          content: Text('Error borrowing the book'),
+                        ),
                       );
                     }
                   },
