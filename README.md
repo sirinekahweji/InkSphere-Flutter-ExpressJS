@@ -7,6 +7,9 @@
 ``` flutter pub get ```
 ``` flutter run ```
 
-## 📺 Watch Video
+## 📺 Video
 https://youtu.be/ZeQDkF9ouOs?si=uqNCF5V61_iJXQDt
+## Interface du Projet
+![](./captures/2024-12-05_14h58_58.png)
+
 
